@@ -1,4 +1,5 @@
 .env
-kri
-kri/
-_pycache_/
+venv
+venv/
+__pycache__/
+*.pyc 
