@@ -4,29 +4,37 @@ import pandas as pd
 import requests
 from dotenv import dotenv_values
 config= dotenv_values(".env")
+import requests
 
-url = "https://real-time-amazon-data.p.rapidapi.com/search"
+url = "https://realty-in-us.p.rapidapi.com/properties/v3/list"
 
-querystring = {"query":"Phone","page":"1","country":"US","sort_by":"RELEVANCE","product_condition":"ALL","is_prime":"false","deals_and_discounts":"NONE"}
-
-headers = {
-	"x-rapidapi-key":config["RAPIDAPI_KEY"],
-	"x-rapidapi-host": "real-time-amazon-data.p.rapidapi.com"
+payload = {
+	"limit": 200,
+	"offset": 0,
+	"postal_code": "90004",
+	"status": ["for_sale", "ready_to_build"],
+	"sort": {
+		"direction": "desc",
+		"field": "list_date"
+	}
 }
-frames=[]
-for page in range (1,11):
-    querystring={"query":"Phone","page":str(page),"country":"US","sort_by":"RELEVANCE","product_condition":"ALL"}
-response = requests.get(url, headers=headers, params=querystring,timeout=30)
-if response.status_code !=200:
-  print(f"page{page} failed -> {response.status_code}")
-  continue
-products= response.json()["data"]["products"]
-df_page= pd.json_normalize(products)
-df_page["search_page"]=page
-frames.append(df_page)
-print(f"page{page}:{len(df_page)} rows")
-time.sleep(1)
-df= pd.concat(frames,ignore_index=True)
+headers = {
+	"x-rapidapi-key": config["RAPIDAPI_KEY"],
+	"x-rapidapi-host": "realty-in-us.p.rapidapi.com",
+	"Content-Type": "application/json"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+
+print(response.json())
+
+data= response.json()
+print(data["data"].keys())
+print(data["data"]["home_search"].keys())
+
+df= pd.json_normalize(data["data"]["home_search"]["results"])
 os.makedirs("data/raw",exist_ok=True)
-df.to_csv("data/raw/amazon_phones_raw.csv",index=False)
+df.to_csv("data/raw/realty_properties.csv",index=False)
+print(f"Successfully saved {len(df)}properties!")
 print(df.shape)
+print(df.columns.tolist())
