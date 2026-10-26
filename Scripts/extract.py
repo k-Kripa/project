@@ -1,4 +1,5 @@
 import os
+import time
 import pandas as pd
 import requests
 from dotenv import dotenv_values
@@ -12,15 +13,20 @@ headers = {
 	"x-rapidapi-key":config["RAPIDAPI_KEY"],
 	"x-rapidapi-host": "real-time-amazon-data.p.rapidapi.com"
 }
-
-response = requests.get(url, headers=headers, params=querystring)
-print(response.status_code)
-
-data = response.json()
-print(data.keys())
-print(data["data"].keys())
-
-df = pd.json_normalize(data["data"]["products"])
-os.makedirs("data/raw", exist_ok=True)
-df.to_csv("data/raw/amazon_phone_page1.csv", index=False)
-print(df.head())
+frames=[]
+for page in range (1,11):
+    querystring={"query":"Phone","page":str(page),"country":"US","sort_by":"RELEVANCE","product_condition":"ALL"}
+response = requests.get(url, headers=headers, params=querystring,timeout=30)
+if response.status_code !=200:
+  print(f"page{page} failed -> {response.status_code}")
+  continue
+products= response.json()["data"]["products"]
+df_page= pd.json_normalize(products)
+df_page["search_page"]=page
+frames.append(df_page)
+print(f"page{page}:{len(df_page)} rows")
+time.sleep(1)
+df= pd.concat(frames,ignore_index=True)
+os.makedirs("data/raw",exist_ok=True)
+df.to_csv("data/raw/amazon_phones_raw.csv",index=False)
+print(df.shape)
