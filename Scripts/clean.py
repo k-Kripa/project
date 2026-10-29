@@ -61,7 +61,7 @@ print(df_1.duplicated().sum())
 print("Exact Duplicate rows :",df_1["Property_id"].duplicated().sum())
 duplicate_ids=df_1[df_1["Property_id"].duplicated(keep=False)]
 print(duplicate_ids)
-
+print(df_1.isnull().sum())
 #  counting how many non_null values a row has (completeness score)
 
 df_1["data_completness"]=df_1.notnull().sum(axis=1) 
@@ -95,6 +95,9 @@ df_1 = df_1.sort_values(
 df_1=df_1.drop_duplicates(subset=["Property_id"],keep="first")
 print(df_1.shape)
 
+# Handle amount_reduced: Fill nulls with 0 (since list_price is present)
+df_1["Amount_reduced"]=df_1["Amount_reduced"].fillna(0)
+
 # remove helper columns use for sorting
 df_1=df_1.drop(columns= ["data_completness", "price_diff_from_avg", "type_priority"])
 print(df_1.shape)
@@ -114,7 +117,7 @@ df_1["City"]=df_1["City"].str.strip().str.title()
 
 # Step 8 : Remove unrealistic price outliers 
 df_1=df_1[df_1["List_price"]>0]
-df_1=df_1[df_1["Amount_reduced"]>0] 
+df_1=df_1[df_1["Amount_reduced"]>=0] 
 
 
 
