@@ -5,15 +5,15 @@ import shutil
 ## Step 1. File and Folder path setup
 # Locate project folders
 folder= Path(__file__).resolve().parent.parent 
-raw_data_folder = folder / "data" / "raw"
-cleaned_data_folder = folder / "data" / "cleaned"
+bronze_data_folder = folder / "data" / "bronze"
+silver_data_folder = folder / "data" / "silver"
 
 # Ensure directories exist
-raw_data_folder.mkdir(parents=True, exist_ok=True)
-cleaned_data_folder.mkdir(parents=True, exist_ok=True)
+bronze_data_folder.mkdir(parents=True, exist_ok=True)
+silver_data_folder.mkdir(parents=True, exist_ok=True)
 
-original_file = raw_data_folder / "realty_properties.csv"
-duplicate_file = raw_data_folder / "realty_properties_cleaning.csv"
+original_file = bronze_data_folder / "realty_properties.csv"
+duplicate_file = silver_data_folder/ "realty_properties_cleaning.csv"
 
 ## Step 2 & 3 : Load,Select & Rename Columns
 # 1. copy and load your dataset
@@ -141,7 +141,7 @@ df_1["Property_type"]=df_1["Property_type"].astype(str)
 df_1["City"]=df_1["City"].astype(str)
 
 ## Save final Dataset
-output_file= cleaned_data_folder/"properties_cleaned.csv"
+output_file= silver_data_folder/"properties_cleaned.csv"
 df_1.to_csv(output_file,index=False)
 #
 print(output_file)
