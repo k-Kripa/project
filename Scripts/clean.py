@@ -5,15 +5,15 @@ import shutil
 ## Step 1. File and Folder path setup
 # Locate project folders
 folder= Path(__file__).resolve().parent.parent 
-bronze_data_folder = folder / "data" / "bronze"
-silver_data_folder = folder / "data" / "silver"
+raw_data_folder = folder / "data" / "raw"
+cleaned_data_folder = folder / "data" / "cleaned"
 
 # Ensure directories exist
-bronze_data_folder.mkdir(parents=True, exist_ok=True)
-silver_data_folder.mkdir(parents=True, exist_ok=True)
+raw_data_folder.mkdir(parents=True, exist_ok=True)
+cleaned_data_folder.mkdir(parents=True, exist_ok=True)
 
-original_file = bronze_data_folder / "realty_properties.csv"
-duplicate_file = silver_data_folder/ "realty_properties_cleaning.csv"
+original_file = raw_data_folder / "realty_properties.csv"
+duplicate_file = cleaned_data_folder/ "realty_properties_cleaning.csv"
 
 ## Step 2 & 3 : Load,Select & Rename Columns
 # 1. copy and load your dataset
@@ -104,7 +104,7 @@ print(df_1.shape)
 
 ## Step 5 :  Missing Vallue Handling 
 #1. Land
-df_1.loc[df_1["Property_type"]=="land"][["Bedrooms","Bathrooms"]]=df_1.loc[df_1["Property_type"]=="land",['Bedrooms',"Bathrooms"]].fillna(0)
+df_1.loc[df_1["Property_type"]=="land",["Bedrooms","Bathrooms"]]=df_1.loc[df_1["Property_type"]=="land",['Bedrooms',"Bathrooms"]].fillna(0)
 
 ## Step 6 : Drop residential properties missing essential data
 df_1 = df_1.dropna(subset=["Bathrooms","Property_sqft"])
@@ -141,7 +141,7 @@ df_1["Property_type"]=df_1["Property_type"].astype(str)
 df_1["City"]=df_1["City"].astype(str)
 
 ## Save final Dataset
-output_file= silver_data_folder/"properties_cleaned.csv"
+output_file= cleaned_data_folder/"properties_cleaned.csv"
 df_1.to_csv(output_file,index=False)
 #
 print(output_file)
