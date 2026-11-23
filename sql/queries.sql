@@ -7,7 +7,7 @@ from student_project.properties_cleaned pc
 
 --1 Average,lowest and highest list price by property type
 
-select
+select property_type,
 count(*)as total_properties,
 Round(Avg("list_price")::numeric,2)as avg_price,
 round(percentile_cont(0.5)within group (order by list_price)::numeric,2)as median_price,
